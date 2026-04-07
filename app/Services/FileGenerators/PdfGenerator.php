@@ -5,6 +5,7 @@ namespace App\Services\FileGenerators;
 use Illuminate\Support\Str;
 use App\Contracts\FileGenerator;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use Illuminate\Support\Facades\Storage;
 
 class PdfGenerator implements FileGenerator
 {
@@ -33,13 +34,21 @@ class PdfGenerator implements FileGenerator
         $template = $options['template'] ?? 'pdf.default';
 
         // Determina el nombre del archivo
-        $filename = $options['filename'] . '.pdf' ?? $this->generateUniqueFilename($options['prefix'] ?? 'document-');
+        $filename = isset($options['filename'])
+            ? $options['filename'] . '.pdf'
+            : $this->generateUniqueFilename($options['prefix'] ?? 'document-');
 
         // Determina la ruta del archivo
         $path = $options['path'] ?? storage_path('app/public/pdf');
 
+        // Crear directorio temporal en caso de que no exista
+        if (!file_exists($path)) {
+            mkdir($path, 0755, true);
+        }
+
         // Determina el tamaño de la hoja
         $paperSize ='a4';
+
         if (!empty($options['paper_size'])) {
             if ($options['paper_size'] == '4a0'
             || $options['paper_size'] == '2a0'
@@ -105,6 +114,7 @@ class PdfGenerator implements FileGenerator
 
         // Determina la orientación de la hoja
         $orientation = 'portrait';
+
         if (!empty($options['orientation'])) {
             if ($options['orientation'] == 'landscape' || $options['orientation'] == 'portrait') {
                 $orientation = $options['orientation'];
@@ -125,9 +135,11 @@ class PdfGenerator implements FileGenerator
         $pdf->setEncryption($encryption['user'], $encryption['owner'], $encryption['permissions']);
 
         // Guarda el PDF en el disco
-        $pdf->setPaper($paperSize, $orientation)->save($path . '/' . $filename);
+        $fullPath = $path . '/' . $filename;
 
-        return $path . '/' . $filename;
+        $pdf->setPaper($paperSize, $orientation)->save($fullPath);
+
+        return $fullPath;
     }
 
     /**
