@@ -37,14 +37,19 @@ class AppSetup extends Command
             $this->call('key:generate');
         }
 
-        // 3. Limpieza de cachés
+        // 3. Generar claves de cifrado para Passport
+        // --force evita prompts interactivos si las claves ya existen
+        $this->call('passport:keys', ['--force' => true]);
+        $this->info('🔑 Claves de Passport generadas/actualizadas.');
+
+        // 4. Limpieza de cachés
         $this->call('optimize:clear');
 
-        // 4. Base de datos y seeders
+        // 5. Base de datos y seeders
         $this->call('migrate:fresh', ['--force' => true]);
         $this->call('db:seed', ['--force' => true]);
         
-        // 5. Enlace de storage
+        // 6. Enlace de storage
         $this->call('storage:link');
 
         $this->comment('--- Configuración finalizada con éxito ---');
