@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Web\AuthController;
+use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\TestMailController;
 use App\Http\Controllers\TestReportController;
 
@@ -19,4 +21,14 @@ Route::prefix('test-mail')->group(function () {
 
 Route::prefix('test-pdf')->group(function () {
     Route::get('/generate', [TestReportController::class, 'generatePdf']);
+});
+
+// Rutas públicas
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Rutas protegidas (requieren estar logueado)
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
