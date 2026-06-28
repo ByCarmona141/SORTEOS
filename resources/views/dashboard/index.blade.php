@@ -19,6 +19,6 @@
     </div>
 @endsection
 
-@push('css')
+@push('js')
 
 @endpush
