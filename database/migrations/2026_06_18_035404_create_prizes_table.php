@@ -51,8 +51,7 @@ use Illuminate\Support\Facades\Schema;
  * - type: podría usarse para estadísticas ("¿cuántos premios en efectivo?")
  */
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('prizes', function (Blueprint $table) {
@@ -64,6 +63,17 @@ return new class extends Migration
                 ->constrained('raffles')
                 ->cascadeOnDelete();
 
+            //Para saber el boleto ganador
+            $table->foreignId('ticket_id')
+                ->nullable()
+                ->constrained('tickets')
+                ->cascadeOnDelete();
+
+            // Categoría del premio (efectivo, automóvil, viaje, etc.)
+            $table->foreignId('type_id')
+                ->constrained('types')
+                ->cascadeOnDelete();
+
             // Posición del premio (1er lugar, 2do lugar, etc.)
             $table->unsignedTinyInteger('position');
 
@@ -72,10 +82,6 @@ return new class extends Migration
 
             // Descripción detallada del premio
             $table->text('description')->nullable();
-
-            // Categoría del premio (efectivo, automóvil, viaje, etc.)
-            // String por flexibilidad: muchos tipos posibles
-            $table->string('type');
 
             // Valor económico (solo para premios en efectivo)
             // null = no aplica (ej: automóvil cuyo valor no se especifica)
@@ -96,8 +102,6 @@ return new class extends Migration
             // Listar premios de un sorteo específico
             $table->index('raffle_id');
 
-            // Filtrar/agrupar premios por tipo (estadísticas)
-            $table->index('type');
         });
     }
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\UserController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Web\AuthController;
@@ -31,4 +32,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Rutas protegidas (requieren estar logueado)
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::resources([
+        'user' => UserController::class
+    ]);
 });
