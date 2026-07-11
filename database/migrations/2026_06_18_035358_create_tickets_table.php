@@ -18,16 +18,15 @@ use Illuminate\Support\Facades\Schema;
  *
  * 1. number como string (no integer):
  *    Los boletos se muestran con ceros a la izquierda: "0022", "0001", "2499".
- *    Si usas integer, pierdes los ceros: 22, 1, 2499.
- *    Con string mantienes el formato visual correcto.
+ *    Si se usa integer, se pierden los ceros: 22, 1, 2499.
+ *    Con string se mantiene el formato visual correcto.
  *    Longitud 10 es flexible para sorteos con más de 9999 boletos.
  *
- * 2. status como enum:
+ * 2. status_tickets como Catalogo:
  *    - disponible: nadie lo ha seleccionado
  *    - apartado: cliente lo seleccionó pero NO ha pagado (temporal)
  *    - pagado: pago validado por admin/gerente
  *    - ganador: este boleto ganó el sorteo
- *    Estos estados son el corazón del flujo. Enum es perfecto aquí.
  *
  * 3. user_id nullable (nullOnDelete):
  *    - null = boleto disponible, nadie lo ha tomado
@@ -56,7 +55,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * Índices compuestos:
  *
- * - (raffle_id, status): la query más común es
+ * - (raffle_id, status_ticket_id): la query más común es
  *   "dame todos los boletos DISPONIBLES del sorteo X"
  *   Un índice compuesto es MÁS eficiente que dos índices separados
  *   para este tipo de consulta.
@@ -112,8 +111,10 @@ return new class extends Migration
             $table->string('number', 10);
 
             // Estado en el ciclo de vida del boleto
-            $table->enum('status', ['disponible', 'apartado', 'pagado', 'ganador'])
-                ->default('disponible');
+            // nullableOnDelete: si el status tickets se borra, conservamos el historial
+            $table->foreignId('status_ticket_id')
+                ->constrained('status_tickets')
+                ->nullableOnDelete();
 
             // Cuándo fue apartado (para calcular si ya expiró la reserva)
             $table->timestamp('reserved_at')->nullable();
@@ -133,7 +134,7 @@ return new class extends Migration
 
             // Query más común: "boletos disponibles del sorteo X"
             // El índice compuesto es más eficiente que dos índices separados
-            $table->index(['raffle_id', 'status']);
+            $table->index(['raffle_id', 'status_ticket_id']);
 
             // Buscar un boleto por número en un sorteo
             // (Aprovecha también el índice UNIQUE, pero lo declaramos

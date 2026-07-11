@@ -27,10 +27,9 @@ use Illuminate\Support\Facades\Schema;
  *    Un sorteo no puede tener dos premios con la misma posición.
  *    No puede existir dos "1er lugar" en el mismo sorteo.
  *
- * 3. type como string (no enum):
+ * 3. type como Catalogo:
  *    Los tipos de premio son muy variados: "efectivo", "automóvil",
  *    "viaje", "electrodoméstico", "terreno"...
- *    Un enum sería muy rígido. Con string puedes poner cualquier categoría.
  *
  * 4. amount (nullable decimal):
  *    Solo aplica para premios en efectivo.

@@ -19,31 +19,23 @@ use Illuminate\Support\Facades\Schema;
  * Decisiones importantes:
  *
  * 1. proof_image como string (ruta):
- *    NUNCA guardes imágenes en la base de datos. Razones:
- *    - Las imágenes pueden pesar varios MB
- *    - Hacer backup de la DB se vuelve enorme
- *    - Las consultas se vuelven lentas
- *    - No puedes usar CDN
- *    En cambio, guardas la RUTA del archivo (ej: "comprobantes/uuid.jpg")
+ *    Guarda la RUTA del archivo (ej: "comprobantes/uuid.jpg")
  *    y el archivo real está en storage/ o en S3/Cloudflare.
  *
  * 2. total_amount decimal(10,2):
  *    Mismo razonamiento que en raffles: dinero = siempre decimal.
  *
- * 3. payment_method como string (no enum):
+ * 3. payment_method como Catalogo:
  *    Los métodos de pago cambian frecuentemente (agregar Clip, CoDi, etc.)
- *    Con string no necesitas alterar la tabla para agregar uno nuevo.
- *    En el modelo puedes tener constantes o en config/ puedes listar los permitidos.
  *
  * 4. reference (nullable string):
  *    El número de referencia bancaria o folio de transferencia.
  *    No siempre aplica (ej: efectivo no tiene referencia), por eso nullable.
  *
- * 5. status como enum:
+ * 5. status_payment_id como Catalogo:
  *    - pendiente: recién subido, esperando revisión
  *    - validado: admin/gerente confirmó el pago
  *    - rechazado: admin/gerente rechazó el pago
- *    Estos 3 estados son estables, enum es apropiado.
  *
  * 6. validated_by (FK nullable a users):
  *    AUDITORÍA CRÍTICA: saber quién aprobó o rechazó.
@@ -52,12 +44,12 @@ use Illuminate\Support\Facades\Schema;
  *
  * 7. validated_at (nullable timestamp):
  *    El CUÁNDO de la validación. Junto con validated_by dan auditoría completa.
- *    Ejemplo: "El gerente Juan lo aprobó el 15/junio/2025 a las 14:32"
+ *    Ejemplo: "El gerente lo aprobó el 15/junio/2025 a las 14:32"
  *
  * Índices:
  * - user_id: buscar todos los pagos de un cliente
  * - raffle_id: buscar pagos de un sorteo específico
- * - status: filtrar pagos pendientes de revisión (la query más común del admin)
+ * - status_payment_id: filtrar pagos pendientes de revisión (la query más común del admin)
  * - validated_by: ver qué aprobó cada admin/gerente
  */
 
@@ -85,8 +77,10 @@ return new class extends Migration
             $table->decimal('total_amount', 10, 2);
 
             // Método de pago (transferencia, efectivo, CoDi, etc.)
-            // String para flexibilidad futura
-            $table->string('payment_method');
+            // nullableOnDelete: si el metodo de pago se borra, conservamos el historial
+            $table->foreignId('payment_method_id')
+                ->constrained('payment_methods')
+                ->nullableOnDelete();
 
             // Número de referencia bancaria (nullable: efectivo no tiene)
             $table->string('reference')->nullable();
@@ -96,8 +90,10 @@ return new class extends Migration
             $table->string('proof_image');
 
             // Estado del pago en el flujo de validación
-            $table->enum('status', ['pendiente', 'validado', 'rechazado'])
-                ->default('pendiente');
+            // nullableOnDelete: si el status payment se borra, conservamos el historial
+            $table->foreignId('status_payment_id')
+                ->constrained('status_payments')
+                ->nullableOnDelete();
 
             // === AUDITORÍA DE VALIDACIÓN ===
             // Quién revisó el pago (admin o gerente)
@@ -122,7 +118,7 @@ return new class extends Migration
             $table->index('raffle_id');
 
             // Filtrar por estado (admin ve "todos los pendientes")
-            $table->index('status');
+            $table->index('status_payment_id');
 
             // Ver historial de validaciones por admin/gerente
             $table->index('validated_by');

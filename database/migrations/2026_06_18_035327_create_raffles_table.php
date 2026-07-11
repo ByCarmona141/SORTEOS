@@ -7,10 +7,6 @@ use Illuminate\Support\Facades\Schema;
 /**
  * TABLA: raffles (Sorteos)
  *
- * ¿Por qué antes que tickets y prizes?
- * Porque un ticket pertenece a un sorteo y un premio pertenece a un sorteo.
- * Si raffles no existe, no podemos crear esas claves foráneas.
- *
  * Decisiones importantes:
  *
  * 1. ticket_count (int, no bigInt):
@@ -19,23 +15,17 @@ use Illuminate\Support\Facades\Schema;
  *
  * 2. ticket_price decimal(10,2):
  *    Para dinero SIEMPRE decimal, nunca float/double.
- *    Float puede tener errores de redondeo: 19.99 + 0.01 podría ser 19.999999...
- *    Con decimal(10,2) tienes hasta 99,999,999.99 con exactitud perfecta.
  *
  * 3. opportunities (tinyInteger sin signo):
  *    Las oportunidades de participación raramente pasan de 10-20.
  *    tinyInteger (0-255) es suficiente y ahorra espacio.
  *
- * 4. status como enum:
- *    Ventaja: la base de datos rechaza valores inválidos automáticamente.
- *    Si alguien intenta poner status='activo' (con tilde) → error inmediato.
- *    Desventaja: para agregar un nuevo estado hay que alterar la tabla.
- *    Para este caso, los 3 estados son estables, así que enum es ideal.
+ * 4. status como catalogo:
+ *    Para este caso, draft = en preparación, active = en venta, finished = cerrado
  *
  * 5. reservation_expiration_hours (nullable tinyInteger):
  *    Si es null → se usa el valor del .env (configuración global).
  *    Si tiene valor → sobreescribe el .env solo para este sorteo.
- *    Esto da flexibilidad sin duplicar lógica.
  *
  * 6. draw_trigger_percentage (unsignedTinyInteger, default null):
  *    El porcentaje de boletos PAGADOS necesario para que el sorteo
@@ -92,7 +82,9 @@ return new class extends Migration
 
             // Estado del ciclo de vida del sorteo
             // draft = en preparación, active = en venta, finished = cerrado
-            $table->enum('status', ['draft', 'active', 'finished'])->default('draft');
+            $table->foreignId('status_id')
+                ->constrained('statuses')
+                ->nullableOnDelete();
 
             // Fecha y hora del sorteo (puede no estar definida aún)
             $table->dateTime('draw_date')->nullable();
@@ -116,9 +108,6 @@ return new class extends Migration
             $table->timestamps();
 
             // === ÍNDICES ===
-            // Filtrar sorteos activos es la query más común
-            $table->index('status');
-
             // Ordenar/filtrar por fecha del sorteo
             $table->index('draw_date');
         });
