@@ -1,65 +1,57 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
-use App\Models\StatusPayment;
+use App\Models\Status;
 use Illuminate\Http\Request;
 
-class StatusPaymentController extends Controller
-{
+class StatusController extends Controller {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
+    public function index() {
         //
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
+    public function create() {
         //
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         //
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(StatusPayment $statusPayment)
-    {
+    public function show(Status $status) {
         //
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(StatusPayment $statusPayment)
-    {
+    public function edit(Status $status) {
         //
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, StatusPayment $statusPayment)
-    {
+    public function update(Request $request, Status $status) {
         //
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(StatusPayment $statusPayment)
-    {
+    public function destroy(Status $status) {
         //
     }
 }
