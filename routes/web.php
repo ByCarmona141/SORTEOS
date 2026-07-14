@@ -3,10 +3,11 @@
 use App\Http\Controllers\Web\UserController;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Web\AuthController;
-use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\TestMailController;
+use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\TestReportController;
+use App\Http\Controllers\Web\ProfileController;
+use App\Http\Controllers\Web\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -32,6 +33,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Rutas protegidas (requieren estar logueado)
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
     Route::resources([
         'user' => UserController::class
     ]);
