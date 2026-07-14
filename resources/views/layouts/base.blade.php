@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 
     {{-- Esto reemplaza el <script src="cdn.tailwindcss.com">.
-         Vite compila tu CSS real y lo inyecta aquí. --}}
+         Vite compila el CSS real y lo inyecta aquí. --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('css') {{-- por si alguna página necesita algo extra --}}

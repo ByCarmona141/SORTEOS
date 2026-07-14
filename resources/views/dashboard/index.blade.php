@@ -1,24 +1,23 @@
-@php use Carbon\Carbon; @endphp
+@extends('layouts.main')
 
-@extends('template')
-
-@section('title', 'Dashboard')
-
-@push('css')
-
-@endpush
+@section('eyebrow', 'Panel administrativo')
+@section('title', 'Escritorio')
 
 @section('content')
-    <div class="container-fluid px-4">
-        <h1 class="mt-4">Escritorio</h1>
-        {{--<h4 class="mt-4">{{ Carbon::now()->subHour(6)->format('d-m-Y') }}</h4>--}}
-        <h4 class="mt-4">{{ Carbon::now()->format('d-m-Y') }}</h4>
-        <ol class="breadcrumb mb-4">
-            <li class="breadcrumb-item active">Escritorio</li>
-        </ol>
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="rounded-xl bg-casino-darker/60 border border-white/10 p-5 hover:border-casino-gold/40 transition-colors">
+            <p class="text-xs text-casino-white/40 uppercase tracking-wide">Fecha</p>
+            <p class="font-display text-xl mt-1">{{ \Carbon\Carbon::now()->format('d-m-Y') }}</p>
+        </div>
+
+        <div class="rounded-xl bg-casino-darker/60 border border-white/10 p-5 hover:border-casino-gold/40 transition-colors">
+            <p class="text-xs text-casino-white/40 uppercase tracking-wide">Estado del sistema</p>
+            <p class="font-display text-xl mt-1 text-casino-gold">Operativo</p>
+        </div>
+
+        <div class="rounded-xl bg-casino-darker/60 border border-white/10 p-5 hover:border-casino-gold/40 transition-colors">
+            <p class="text-xs text-casino-white/40 uppercase tracking-wide">Sorteos activos</p>
+            <p class="font-display text-xl mt-1">—</p>
+        </div>
     </div>
 @endsection
-
-@push('js')
-
-@endpush
