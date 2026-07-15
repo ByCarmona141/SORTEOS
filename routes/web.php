@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\RaffleController;
 use App\Http\Controllers\Web\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -38,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::resources([
-        'user' => UserController::class
+        'user' => UserController::class,
+        'raffle' => RaffleController::class
     ]);
 });

@@ -17,6 +17,13 @@
                     </div>
                     Usuarios
                 </a>
+
+                <a class="nav-link" href="{{ route('raffle.index') }}">
+                    <div class="sb-nav-link-icon">
+                        <i class="fa fa-ticket" aria-hidden="true"></i>
+                    </div>
+                    Sorteos
+                </a>
                 {{--<div class="sb-sidenav-menu-heading">Modulos</div>
                 <a class="nav-link" href="{{route('banco.index')}}">
                     <div class="sb-nav-link-icon"><i class="fa fa-university" aria-hidden="true"></i></div>
