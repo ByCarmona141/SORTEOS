@@ -5,10 +5,10 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
-/* Aquí es donde vive TODO tu sistema de diseño: colores, fuentes, etc.
-   Cualquier vista que use @vite tendrá acceso a estas clases automáticamente. */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
     --font-display: 'Poppins', sans-serif;
     --font-body: 'Inter', sans-serif;
 
@@ -18,46 +18,129 @@
     --color-casino-red: #DC2626;
     --color-casino-white: #F9FAFB;
 
-    /* Registra las animaciones como tokens: esto crea automáticamente
-       las clases animate-glow, animate-fade-slide-up y animate-shimmer */
     --animate-glow: casino-glow 3s ease-in-out infinite;
     --animate-fade-slide-up: fade-slide-up 0.6s ease-out both;
     --animate-shimmer: shimmer 2.5s linear infinite;
+
+    /* ---- Tema del panel interno (dashboard) ---- */
+    --font-admin: 'Geist', sans-serif;
+    --font-mono-label: 'JetBrains Mono', monospace;
+
+    /* Tamaños de texto con su propio interlineado/peso, tal como en tu mockup */
+    --text-body-lg: 18px;            
+    --text-body-lg--line-height: 28px;
+    --text-body-md: 16px;            
+    --text-body-md--line-height: 24px;
+    --text-label-caps: 12px;         
+    --text-label-caps--line-height: 16px;
+    --text-label-caps--letter-spacing: 0.05em;   
+    --text-label-caps--font-weight: 500;
+    --text-headline-md: 24px;        
+    --text-headline-md--line-height: 32px;
+    --text-headline-md--letter-spacing: -0.01em; 
+    --text-headline-md--font-weight: 600;
+    --text-stats-number: 32px;       
+    --text-stats-number--line-height: 40px;
+    --text-stats-number--letter-spacing: -0.02em; 
+    --text-stats-number--font-weight: 700;
+    --text-display-lg: 48px;         
+    --text-display-lg--line-height: 56px;
+    --text-display-lg--letter-spacing: -0.02em; 
+    --text-display-lg--font-weight: 700;
+    --text-display-lg-mobile: 36px;  
+    --text-display-lg-mobile--line-height: 42px;
+    --text-display-lg-mobile--letter-spacing: -0.02em; 
+    --text-display-lg-mobile--font-weight: 700;
+
+    /* Espaciados con nombre (además de los números que Tailwind ya trae) */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 48px;
+    --spacing-gutter: 24px;
+
+    /* Paleta Material 3 oscura, completa */
+    --color-background: #111415;
+    --color-on-background: #e1e3e4;
+    --color-surface: #111415;
+    --color-surface-dim: #111415;
+    --color-surface-bright: #373a3b;
+    --color-surface-variant: #323536;
+    --color-on-surface: #e1e3e4;
+    --color-on-surface-variant: #d8c3ad;
+    --color-surface-container-lowest: #0c0f10;
+    --color-surface-container-low: #191c1d;
+    --color-surface-container: #1d2021;
+    --color-surface-container-high: #282a2b;
+    --color-surface-container-highest: #323536;
+    --color-inverse-surface: #e1e3e4;
+    --color-inverse-on-surface: #2e3132;
+
+    --color-primary: #ffc174;
+    --color-on-primary: #472a00;
+    --color-primary-container: #f59e0b;
+    --color-on-primary-container: #613b00;
+    --color-primary-fixed: #ffddb8;
+    --color-primary-fixed-dim: #ffb95f;
+    --color-on-primary-fixed: #2a1700;
+    --color-on-primary-fixed-variant: #653e00;
+    --color-inverse-primary: #855300;
+    --color-surface-tint: #ffb95f;
+
+    --color-secondary: #bec6e0;
+    --color-on-secondary: #283044;
+    --color-secondary-container: #3f465c;
+    --color-on-secondary-container: #adb4ce;
+    --color-secondary-fixed: #dae2fd;
+    --color-secondary-fixed-dim: #bec6e0;
+    --color-on-secondary-fixed: #131b2e;
+    --color-on-secondary-fixed-variant: #3f465c;
+
+    --color-tertiary: #c6cbe4;
+    --color-on-tertiary: #2a3043;
+    --color-tertiary-container: #abb0c8;
+    --color-on-tertiary-container: #3d4357;
+    --color-tertiary-fixed: #dce1fb;
+    --color-tertiary-fixed-dim: #c0c6de;
+    --color-on-tertiary-fixed: #151b2d;
+    --color-on-tertiary-fixed-variant: #40465a;
+
+    --color-error: #ffb4ab;
+    --color-on-error: #690005;
+    --color-error-container: #93000a;
+    --color-on-error-container: #ffdad6;
+
+    --color-outline: #a08e7a;
+    --color-outline-variant: #534434;
 }
 
-/* Animaciones */
-@keyframes glow-pulse {
-    0%, 100% { opacity: 0.35; transform: scale(1); }
-    50% { opacity: 0.6; transform: scale(1.05); }
-}
-.casino-glow {
-    animation: glow-pulse 4s ease-in-out infinite;
-}
-
-@keyframes fade-slide-up {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.card-enter {
-    animation: fade-slide-up 0.6s ease-out;
-}
-
-@keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-}
-.btn-shimmer:hover {
-    background-position: right center;
-    animation: shimmer 1.5s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .casino-glow, .card-enter, .btn-shimmer:hover {
-        animation: none;
-    }
-}
-
+/* ---- Animaciones ---- */
 @keyframes casino-glow {
     0%, 100% { opacity: .45; transform: scale(1); }
     50%      { opacity: .9;  transform: scale(1.12); }
+}
+@keyframes fade-slide-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+    from { background-position: -150% 0; }
+    to   { background-position: 150% 0; }
+}
+@keyframes dash-draw {
+    to { stroke-dashoffset: 0; }
+}
+.animate-dash-draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: dash-draw 1.6s ease-out forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+    .animate-dash-draw { animation: none; stroke-dashoffset: 0; }
+}
+
+/* Requisito de Google para que los íconos "Material Symbols" se vean rellenos/correctos */
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }

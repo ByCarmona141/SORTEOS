@@ -61,17 +61,25 @@
                     <p class="text-xs text-casino-white/40 mb-4">Deja estos campos vacíos si no quieres cambiar tu contraseña.</p>
 
                     <div class="mb-4">
+                        <label for="current_password" class="block text-sm text-casino-white/70 mb-1.5">Contraseña actual</label>
+                        <input type="password" id="current_password" name="current_password"
+                            class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-casino-white
+                                    focus:outline-none focus:border-casino-gold focus:ring-2 focus:ring-casino-gold/30">
+                        <p class="mt-1 text-xs text-casino-white/40">Solo necesaria si vas a cambiar tu contraseña.</p>
+                    </div>
+
+                    <div class="mb-4">
                         <label for="password" class="block text-sm text-casino-white/70 mb-1.5">Nueva contraseña</label>
                         <input type="password" id="password" name="password"
-                               class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-casino-white
-                                      focus:outline-none focus:border-casino-gold focus:ring-2 focus:ring-casino-gold/30">
+                            class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-casino-white
+                                    focus:outline-none focus:border-casino-gold focus:ring-2 focus:ring-casino-gold/30">
                     </div>
 
                     <div>
                         <label for="password_confirmation" class="block text-sm text-casino-white/70 mb-1.5">Confirmar contraseña</label>
                         <input type="password" id="password_confirmation" name="password_confirmation"
-                               class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-casino-white
-                                      focus:outline-none focus:border-casino-gold focus:ring-2 focus:ring-casino-gold/30">
+                            class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-casino-white
+                                    focus:outline-none focus:border-casino-gold focus:ring-2 focus:ring-casino-gold/30">
                     </div>
                 </div>
 

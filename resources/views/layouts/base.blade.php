@@ -10,7 +10,7 @@
 
     {{-- Esto reemplaza el <script src="cdn.tailwindcss.com">.
          Vite compila el CSS real y lo inyecta aquí. --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/login.css', 'resources/js/app.js'])
 
     @stack('css') {{-- por si alguna página necesita algo extra --}}
 </head>

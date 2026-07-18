@@ -31,18 +31,26 @@ class ProfileController extends Controller
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'phone'    => ['required', 'string', 'max:10', Rule::unique('users', 'phone')->ignore($user->id)],
+            // 'required_with:password' = solo obligatorio si el campo "password" viene lleno.
+            // Así no molestamos al usuario si solo va a cambiar su nombre.
+            'current_password' => ['nullable', 'required_with:password', 'string'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
+
+        // Si el usuario quiere una contraseña nueva, primero confirmamos que sepa la actual.
+        if (!empty($validated['password'])) {
+            if (!Hash::check($validated['current_password'], $user->password)) {
+                return back()
+                    ->withErrors(['current_password' => 'La contraseña actual no es correcta.'])
+                    ->onlyInput('name', 'email', 'phone');
+            }
+
+            $user->password = Hash::make($validated['password']);
+        }
 
         $user->name  = $validated['name'];
         $user->email = $validated['email'];
         $user->phone = $validated['phone'];
-
-        // La contraseña solo se toca si el usuario escribió algo.
-        // Si dejamos el campo vacío, no queremos borrar su contraseña actual.
-        if (!empty($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
-        }
 
         $user->save();
 
