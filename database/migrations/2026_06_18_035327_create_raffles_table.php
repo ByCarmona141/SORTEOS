@@ -58,8 +58,7 @@ use Illuminate\Support\Facades\Schema;
  * - draw_date: para mostrar próximos sorteos ordenados por fecha
  */
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('raffles', function (Blueprint $table) {
@@ -81,8 +80,8 @@ return new class extends Migration
             $table->unsignedTinyInteger('opportunities')->default(1);
 
             // Estado del ciclo de vida del sorteo
-            // draft = en preparación, active = en venta, finished = cerrado
             $table->foreignId('status_id')
+                ->default(1)
                 ->constrained('statuses')
                 ->nullableOnDelete();
 
