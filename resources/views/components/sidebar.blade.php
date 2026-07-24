@@ -27,7 +27,18 @@
             </a>
         </li>
 
-        @foreach ([['confirmation_number', 'Sorteos'], ['payments', 'Pagos'], ['help_center', 'Soporte']] as [$icon, $label])
+        <li>
+            <a href="{{ route('raffle.index') }}"
+               class="flex items-center gap-md px-md py-sm rounded transition-all ml-[4px]
+                      {{ request()->routeIs('raffle.*')
+                         ? 'text-primary border-l-4 border-primary bg-surface-container-low font-bold -ml-[4px]'
+                         : 'text-on-surface-variant hover:text-on-surface hover:bg-primary-container/10' }}">
+                <span class="material-symbols-outlined">confirmation_number</span>
+                <span class="text-body-md">Sorteos</span>
+            </a>
+        </li>
+
+        @foreach ([['payments', 'Pagos'], ['help_center', 'Soporte']] as [$icon, $label])
             <li>
                 <span class="flex items-center gap-md px-md py-sm rounded ml-[4px] text-on-surface-variant/40 cursor-not-allowed">
                     <span class="material-symbols-outlined">{{ $icon }}</span>

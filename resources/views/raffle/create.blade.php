@@ -1,57 +1,23 @@
-@extends('template')
+@extends('layouts.main')
 
 @section('title', 'Crear Sorteo')
 
-@push('css')
-
-@endpush
-
 @section('content')
-
-    <div class="container-fluid px-4">
-        <h1 class="mt-4">Crear Nuevo Sorteo</h1>
-
-        <ol class="breadcrumb mb-4">
-            <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Inicio</a></li>
-            <li class="breadcrumb-item"><a href="{{route('raffle.index')}}">Sorteos</a></li>
-            <li class="breadcrumb-item active">Crear Sorteo</li>
-        </ol>
-
-        <div class="container w-100 border border-3 border-primary rounded p-4 mt-3">
-            <form action="{{route('raffle.store')}}" method="post" autocomplete="off">
-                @csrf
-                <div class="row g-3">
-
-                    <!-- name -->
-                    <x-form-element id="name" label="Nombre" required="true" focused="true"></x-form-element>
-
-                    <!-- description -->
-                    <x-form-element id="description" label="Descripción" type="textarea"></x-form-element>
-
-                    <!-- ticket_count -->
-                    <x-form-element id="ticket_count" label="Cantidad de boletos" required="true"
-                                    colSize="6"></x-form-element>
-
-                    <!-- ticket_price -->
-                    <x-form-element id="ticket_price" label="Precio del boleto" required="true"
-                                    colSize="6"></x-form-element>
-
-                    <!-- draw_date -->
-                    <x-form-element id="draw_date" label="Fecha del Sorteo" type="date"></x-form-element>
-
-                    <!-- Opportunities -->
-                    <x-form-element id="opportunities" label="Oportunidades" required="true"></x-form-element>
-
-                    <!-- Form buttons -->
-                    <x-form-buttons routeName="raffle"></x-form-buttons>
-
-                </div>
-            </form>
-        </div>
+<div class="max-w-5xl mx-auto py-8">
+    <div class="mb-8 border-b border-md-outline-variant/50 pb-4">
+        <a href="{{ route('raffle.index') }}" class="text-sm text-md-on-surface-variant hover:text-md-primary-container transition-colors">← Volver a sorteos</a>
+        <h1 class="text-4xl font-bold text-md-on-surface tracking-tight mt-2">Crear Sorteo</h1>
+        <p class="text-md-on-surface-variant mt-1">Configura un nuevo evento de rifa en el sistema.</p>
     </div>
 
+    @if (session('success'))
+        <div class="mb-6 rounded-lg border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-emerald-300 text-sm">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <form action="{{ route('raffle.store') }}" method="POST">
+        @include('raffle._form', ['statuses' => $statuses])
+    </form>
+</div>
 @endsection
-
-@push('js')
-
-@endpush

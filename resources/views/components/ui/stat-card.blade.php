@@ -3,6 +3,7 @@
     'value',
     'hint' => null,
     'highlight' => false,
+    'icon' => null,
 ])
 
 <div {{ $attributes->merge(['class' => 'bg-surface-container border border-surface-variant rounded-lg p-lg relative overflow-hidden group']) }}>
@@ -13,9 +14,14 @@
         <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-primary/10 transition-all"></div>
     @endif
 
-    <p class="font-mono-label text-label-caps uppercase relative {{ $highlight ? 'text-primary' : 'text-on-surface-variant' }}">
-        {{ $label }}
-    </p>
+    <div class="flex items-center justify-between relative">
+        <p class="font-mono-label text-label-caps uppercase {{ $highlight ? 'text-primary' : 'text-on-surface-variant' }}">
+            {{ $label }}
+        </p>
+        @if ($icon)
+            <span class="material-symbols-outlined text-xl {{ $highlight ? 'text-primary' : 'text-on-surface-variant/60' }}">{{ $icon }}</span>
+        @endif
+    </div>
 
     <div class="mt-sm flex items-end gap-sm relative">
         <span class="text-stats-number text-on-surface">{{ $value }}</span>

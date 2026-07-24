@@ -12,7 +12,7 @@
             <a href="#" class="px-lg py-sm border border-outline text-on-surface rounded hover:border-primary hover:text-primary transition-colors text-body-md">
                 Validar Pagos
             </a>
-            <a href="#" class="px-lg py-sm bg-primary text-on-primary rounded font-bold hover:shadow-[0_0_15px_rgba(255,193,116,0.3)] transition-all text-body-md">
+            <a href="{{ route('raffle.create') }}" class="px-lg py-sm bg-primary text-on-primary rounded font-bold hover:shadow-[0_0_15px_rgba(255,193,116,0.3)] transition-all text-body-md">
                 Crear Sorteo
             </a>
         </div>

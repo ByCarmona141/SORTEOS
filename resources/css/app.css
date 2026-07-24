@@ -18,6 +18,20 @@
     --color-casino-red: #DC2626;
     --color-casino-white: #F9FAFB;
 
+    --color-md-surface: #111415;
+    --color-md-surface-container: #1d2021;
+    --color-md-surface-container-low: #191c1d;
+    --color-md-surface-container-lowest: #0c0f10;
+    --color-md-surface-container-high: #282a2b;
+    --color-md-surface-variant: #323536;
+    --color-md-on-surface: #e1e3e4;
+    --color-md-on-surface-variant: #d8c3ad;
+    --color-md-outline: #a08e7a;
+    --color-md-outline-variant: #534434;
+    --color-md-primary: #ffc174;
+    --color-md-primary-container: #f59e0b;
+    --color-md-on-primary-container: #613b00;
+
     --animate-glow: casino-glow 3s ease-in-out infinite;
     --animate-fade-slide-up: fade-slide-up 0.6s ease-out both;
     --animate-shimmer: shimmer 2.5s linear infinite;
@@ -27,29 +41,29 @@
     --font-mono-label: 'JetBrains Mono', monospace;
 
     /* Tamaños de texto con su propio interlineado/peso, tal como en tu mockup */
-    --text-body-lg: 18px;            
+    --text-body-lg: 18px;
     --text-body-lg--line-height: 28px;
-    --text-body-md: 16px;            
+    --text-body-md: 16px;
     --text-body-md--line-height: 24px;
-    --text-label-caps: 12px;         
+    --text-label-caps: 12px;
     --text-label-caps--line-height: 16px;
-    --text-label-caps--letter-spacing: 0.05em;   
+    --text-label-caps--letter-spacing: 0.05em;
     --text-label-caps--font-weight: 500;
-    --text-headline-md: 24px;        
+    --text-headline-md: 24px;
     --text-headline-md--line-height: 32px;
-    --text-headline-md--letter-spacing: -0.01em; 
+    --text-headline-md--letter-spacing: -0.01em;
     --text-headline-md--font-weight: 600;
-    --text-stats-number: 32px;       
+    --text-stats-number: 32px;
     --text-stats-number--line-height: 40px;
-    --text-stats-number--letter-spacing: -0.02em; 
+    --text-stats-number--letter-spacing: -0.02em;
     --text-stats-number--font-weight: 700;
-    --text-display-lg: 48px;         
+    --text-display-lg: 48px;
     --text-display-lg--line-height: 56px;
-    --text-display-lg--letter-spacing: -0.02em; 
+    --text-display-lg--letter-spacing: -0.02em;
     --text-display-lg--font-weight: 700;
-    --text-display-lg-mobile: 36px;  
+    --text-display-lg-mobile: 36px;
     --text-display-lg-mobile--line-height: 42px;
-    --text-display-lg-mobile--letter-spacing: -0.02em; 
+    --text-display-lg-mobile--letter-spacing: -0.02em;
     --text-display-lg-mobile--font-weight: 700;
 
     /* Espaciados con nombre (además de los números que Tailwind ya trae) */
@@ -116,10 +130,11 @@
 }
 
 /* ---- Animaciones ---- */
-@keyframes casino-glow {
-    0%, 100% { opacity: .45; transform: scale(1); }
-    50%      { opacity: .9;  transform: scale(1.12); }
+@keyframes glow-pulse {
+    0%, 100% { opacity: 0.35; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.05); }
 }
+.casino-glow { animation: glow-pulse 4s ease-in-out infinite; }
 @keyframes fade-slide-up {
     from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -143,4 +158,40 @@
 /* Requisito de Google para que los íconos "Material Symbols" se vean rellenos/correctos */
 .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* --- Clases del formulario "premium" (nuevo diseño) --- */
+@layer components {
+    .premium-input {
+        background-color: var(--color-md-surface-container);
+        border: 1px solid var(--color-md-surface-variant);
+        color: var(--color-md-on-surface);
+        border-radius: 0.5rem;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        width: 100%;
+        font-family: var(--font-geist);
+        transition: all 0.2s ease-in-out;
+    }
+    .premium-input:focus {
+        outline: none;
+        border-color: var(--color-md-primary-container);
+        box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+    }
+    .premium-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--color-md-on-surface-variant);
+        font-family: var(--font-geist);
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    .glass-card {
+        background: rgba(30, 41, 59, 0.4);
+        backdrop-filter: blur(12px);
+        border: 1px solid #334155;
+        border-radius: 0.75rem;
+    }
 }

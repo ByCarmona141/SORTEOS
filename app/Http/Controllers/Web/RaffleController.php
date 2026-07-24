@@ -2,24 +2,39 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreRaffleRequest;
-use App\Http\Requests\UpdateRaffleRequest;
-use App\Models\Raffle;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+
+use App\Models\Raffle;
+use App\Models\Status;
+use App\Http\Requests\Raffle\StoreRaffleRequest;
+use App\Http\Requests\Raffle\UpdateRaffleRequest;
 
 class RaffleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $raffles = Raffle::all();
+        $raffles = Raffle::with('status')
+            ->when($request->search, fn ($q) => $q->where('name', 'like', "%{$request->search}%"))
+            ->when($request->status, fn ($q) => $q->whereHas('status', fn ($s) => $s->where('name', $request->status)))
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
-        return view('raffle.index', compact('raffles'));
+        $stats = [
+            'active'   => Raffle::whereHas('status', fn ($q) => $q->where('name', 'active'))->count(),
+            'draft'    => Raffle::whereHas('status', fn ($q) => $q->where('name', 'draft'))->count(),
+            'finished' => Raffle::whereHas('status', fn ($q) => $q->where('name', 'finished'))->count(),
+        ];
+
+        $statuses = Status::all();
+
+        return view('raffle.index', compact('raffles', 'stats', 'statuses'));
     }
 
     /**
@@ -27,7 +42,9 @@ class RaffleController extends Controller
      */
     public function create()
     {
-        return view('raffle.create');
+        $statuses = Status::all();
+
+        return view('raffle.create', compact('statuses'));
     }
 
     /**
@@ -35,28 +52,15 @@ class RaffleController extends Controller
      */
     public function store(StoreRaffleRequest $request)
     {
-        try {
-            DB::beginTransaction();
+        $validated = $request->validated();
 
-            $user_id = auth()->user()->id;
-            $request['created_by'] = $user_id;
+        $validated['created_by'] = auth()->id();
 
-            $raffle = Raffle::create($request->all());
+        $raffle = Raffle::create($validated);
 
-            DB::commit();
-
-            $Mensaje = 'success__Agregado correctamente';
-
-            if ($request->accion == 'continuar') {
-                return redirect()->route('raffle.index')->with('mensaje', $Mensaje);
-            }
-            return redirect()->route('raffle.create')->with('mensaje', $Mensaje);
-
-        } catch (Exception $e) {
-            DB::rollBack();
-            $Mensaje = 'error__' . $e->getMessage();
-            return redirect()->route('raffle.create')->with('mensaje', $Mensaje)->withInput();
-        }
+        return redirect()
+            ->route('raffle.show', $raffle)
+            ->with('success', 'Sorteo creado exitosamente.');
     }
 
     /**
@@ -72,7 +76,9 @@ class RaffleController extends Controller
      */
     public function edit(Raffle $raffle)
     {
-        return view('raffle.edit', compact('raffle'));
+        $statuses = Status::all();
+
+        return view('raffle.edit', compact('raffle', 'statuses'));
     }
 
     /**
