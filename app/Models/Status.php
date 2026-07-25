@@ -6,5 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Status extends Model
 {
-    //
+    public function raffles()
+    {
+        return $this->hasMany(Raffle::class);
+    }
 }

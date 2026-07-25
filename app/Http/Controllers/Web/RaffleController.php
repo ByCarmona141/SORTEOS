@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 
 use App\Models\Raffle;
 use App\Models\Status;
+use App\Models\Prize;
 use App\Http\Requests\Raffle\StoreRaffleRequest;
 use App\Http\Requests\Raffle\UpdateRaffleRequest;
 
@@ -26,15 +27,9 @@ class RaffleController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        $stats = [
-            'active'   => Raffle::whereHas('status', fn ($q) => $q->where('name', 'active'))->count(),
-            'draft'    => Raffle::whereHas('status', fn ($q) => $q->where('name', 'draft'))->count(),
-            'finished' => Raffle::whereHas('status', fn ($q) => $q->where('name', 'finished'))->count(),
-        ];
+        $statuses = Status::withCount('raffles')->get();
 
-        $statuses = Status::all();
-
-        return view('raffle.index', compact('raffles', 'stats', 'statuses'));
+        return view('raffle.index', compact('raffles', 'statuses'));
     }
 
     /**
@@ -66,9 +61,11 @@ class RaffleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Raffle $raffle)
     {
-        //
+        $raffle->load('prizes', 'status');
+
+        return view('raffle.show', compact('raffle'));
     }
 
     /**

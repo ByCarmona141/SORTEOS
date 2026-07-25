@@ -6,7 +6,7 @@
     <div class="flex justify-between items-end motion-safe:animate-fade-slide-up">
         <div>
             <h2 class="text-display-lg-mobile lg:text-display-lg font-bold tracking-tighter">Sorteos</h2>
-            <p class="text-body-md text-on-surface-variant mt-xs">Administra todos los sorteos activos, en preparación y finalizados.</p>
+            <p class="text-body-md text-on-surface-variant mt-xs">Administra todos los sorteos según su estado.</p>
         </div>
         <a href="{{ route('raffle.create') }}" class="px-lg py-sm bg-primary text-on-primary rounded font-bold hover:shadow-[0_0_15px_rgba(255,193,116,0.3)] transition-all text-body-md">
             Crear Sorteo
@@ -19,12 +19,19 @@
         </div>
     @endif
 
-    {{-- Tarjetas resumen, mismas que el dashboard, ahora con ícono --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
-        <x-ui.stat-card label="Activos" :value="$stats['active'] ?? 0" icon="check_circle" />
-        <x-ui.stat-card label="En preparación" :value="$stats['draft'] ?? 0" icon="draft" />
-        <x-ui.stat-card label="Finalizados" :value="$stats['finished'] ?? 0" icon="flag" />
-        <x-ui.stat-card label="Total de sorteos" :value="$raffles->total()" icon="confirmation_number" />
+    {{-- Tarjetas: una por cada estado real de la tabla statuses --}}
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-gutter">
+        @foreach ($statuses as $status)
+            @php
+                $badge = \App\Models\Raffle::statusBadgeMap()[$status->name] ?? ['icon' => 'help'];
+            @endphp
+            <x-ui.stat-card
+                :label="$status->name"
+                :value="$status->raffles_count"
+                :icon="$badge['icon']"
+            />
+        @endforeach
+        <x-ui.stat-card label="Total de sorteos" :value="$raffles->total()" icon="confirmation_number" highlight="true" />
     </div>
 
     {{-- Filtros --}}
@@ -41,7 +48,7 @@
                 <option value="">Todos los estados</option>
                 @foreach ($statuses as $status)
                     <option value="{{ $status->name }}" @selected(request('status') === $status->name)>
-                        {{ ucfirst($status->name) }}
+                        {{ $status->name }}
                     </option>
                 @endforeach
             </select>
@@ -57,7 +64,7 @@
         @endif
     </form>
 
-    {{-- Tabla, mismos colores que el resto del dashboard --}}
+    {{-- Tabla --}}
     <div class="bg-surface-container border border-surface-variant rounded-lg overflow-hidden">
         <table class="w-full text-sm">
             <thead>
@@ -74,18 +81,7 @@
                 @forelse ($raffles as $raffle)
                     @php
                         $sold = $raffle->tickets_sold_percentage ?? 0;
-                        $statusStyles = [
-                            'draft'    => ['bg-on-surface-variant/10 text-on-surface-variant border-outline-variant/40', 'draft'],
-                            'active'   => ['bg-primary/10 text-primary border-primary/30', 'check_circle'],
-                            'finished' => ['bg-secondary/10 text-secondary border-secondary/30', 'flag'],
-                        ];
-                        $statusLabels = [
-                            'draft'    => 'En preparación',
-                            'active'   => 'Activo',
-                            'finished' => 'Finalizado',
-                        ];
-                        $statusKey = $raffle->status->name ?? 'draft';
-                        [$statusClass, $statusIcon] = $statusStyles[$statusKey] ?? $statusStyles['draft'];
+                        $badge = $raffle->statusBadge();
                     @endphp
                     <tr class="hover:bg-surface-variant/20 transition-colors">
                         <td class="px-lg py-md">
@@ -95,9 +91,9 @@
                             <p class="text-on-surface-variant/60 text-xs mt-0.5">{{ $raffle->ticket_count }} boletos</p>
                         </td>
                         <td class="px-lg py-md">
-                            <span class="inline-flex items-center gap-1.5 px-sm py-1 rounded-full text-xs font-medium border {{ $statusClass }}">
-                                <span class="material-symbols-outlined text-sm">{{ $statusIcon }}</span>
-                                {{ $statusLabels[$statusKey] ?? 'En preparación' }}
+                            <span class="inline-flex items-center gap-1.5 px-sm py-1 rounded-full text-xs font-medium border {{ $badge['classes'] }}">
+                                <span class="material-symbols-outlined text-sm">{{ $badge['icon'] }}</span>
+                                {{ $raffle->status->name ?? 'Pendiente' }}
                             </span>
                         </td>
                         <td class="px-lg py-md text-on-surface/80">
