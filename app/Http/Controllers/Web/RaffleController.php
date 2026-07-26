@@ -10,22 +10,26 @@ use App\Http\Controllers\Controller;
 use App\Models\Raffle;
 use App\Models\Status;
 use App\Models\Prize;
+use App\Http\Traits\Sortable;
 use App\Http\Requests\Raffle\StoreRaffleRequest;
 use App\Http\Requests\Raffle\UpdateRaffleRequest;
 
 class RaffleController extends Controller
 {
+    use Sortable; // Traits
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $raffles = Raffle::with('status')
+        $query = Raffle::with('status')
             ->when($request->search, fn ($q) => $q->where('name', 'like', "%{$request->search}%"))
-            ->when($request->status, fn ($q) => $q->whereHas('status', fn ($s) => $s->where('name', $request->status)))
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
+            ->when($request->status, fn ($q) => $q->whereHas('status', fn ($s) => $s->where('name', $request->status)));
+
+        $this->applySorting($query, $request, ['name', 'ticket_price', 'draw_date', 'created_at']);
+
+        $raffles = $query->paginate($this->resolvePerPage($request))->withQueryString();
 
         $statuses = Status::withCount('raffles')->get();
 

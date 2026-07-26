@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Prize;
 
 use Illuminate\Foundation\Http\FormRequest;
 

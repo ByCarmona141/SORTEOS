@@ -54,6 +54,9 @@
             </select>
             <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
         </div>
+
+        <x-ui.per-page-select />
+
         <button type="submit" class="px-lg py-sm border border-outline text-on-surface rounded hover:border-primary hover:text-primary transition-colors text-body-md">
             Filtrar
         </button>
@@ -69,11 +72,11 @@
         <table class="w-full text-sm">
             <thead>
                 <tr class="border-b border-surface-variant text-on-surface-variant font-mono-label text-label-caps uppercase">
-                    <th class="text-left px-lg py-md font-medium">Sorteo</th>
+                    <x-ui.sortable-th column="name" label="Sorteo" />
                     <th class="text-left px-lg py-md font-medium">Estado</th>
-                    <th class="text-left px-lg py-md font-medium">Precio boleto</th>
+                    <x-ui.sortable-th column="ticket_price" label="Precio boleto" />
                     <th class="text-left px-lg py-md font-medium">Progreso</th>
-                    <th class="text-left px-lg py-md font-medium">Fecha sorteo</th>
+                    <x-ui.sortable-th column="draw_date" label="Fecha sorteo" />
                     <th class="text-right px-lg py-md font-medium">Acciones</th>
                 </tr>
             </thead>

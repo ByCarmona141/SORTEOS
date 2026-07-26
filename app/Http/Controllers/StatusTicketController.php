@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreStatusTicketRequest;
-use App\Http\Requests\UpdateStatusTicketRequest;
 use App\Models\StatusTicket;
+use App\Http\Requests\StatusTicket\StoreStatusTicketRequest;
+use App\Http\Requests\StatusTicket\UpdateStatusTicketRequest;
 
 class StatusTicketController extends Controller
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\StatusTicket;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreStatusTicketRequest extends FormRequest
+class UpdateStatusTicketRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
