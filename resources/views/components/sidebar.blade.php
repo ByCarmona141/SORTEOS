@@ -28,6 +28,17 @@
         </li>
 
         <li>
+            <a href="{{ route('role.index') }}"
+            class="flex items-center gap-md px-md py-sm rounded transition-all ml-[4px]
+                    {{ request()->routeIs('role.*')
+                        ? 'text-primary border-l-4 border-primary bg-surface-container-low font-bold -ml-[4px]'
+                        : 'text-on-surface-variant hover:text-on-surface hover:bg-primary-container/10' }}">
+                <span class="material-symbols-outlined">badge</span>
+                <span class="text-body-md">Roles</span>
+            </a>
+        </li>
+
+        <li>
             <a href="{{ route('raffle.index') }}"
                class="flex items-center gap-md px-md py-sm rounded transition-all ml-[4px]
                       {{ request()->routeIs('raffle.*')

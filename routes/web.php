@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\TestMailController;
 use App\Http\Controllers\Web\AuthController;
+use App\Http\Controllers\Web\RoleController;
 use App\Http\Controllers\TestReportController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\DashboardController;
@@ -42,6 +43,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resources([
         'user' => UserController::class,
-        'raffle' => RaffleController::class
+        'raffle' => RaffleController::class,
+        'role' => RoleController::class,
     ]);
 });
