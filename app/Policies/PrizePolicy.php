@@ -3,9 +3,9 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\Type;
+use App\Models\Prize;
 
-class TypePolicy
+class PrizePolicy
 {
     /**
      * Aplica antes de los demás métodos.
@@ -23,9 +23,9 @@ class TypePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Type $model): bool
+    public function view(User $user, Prize $model): bool
     {
-        return $user->can('view-types');
+        return $user->can('view-prizes');
     }
 
     /**
@@ -33,22 +33,22 @@ class TypePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create-types');
+        return $user->can('create-prizes');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Type $model): bool
+    public function update(User $user, Prize $model): bool
     {
-        return $user->can('update-types');
+        return $user->can('update-prizes');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Type $model): bool
+    public function delete(User $user, Prize $model): bool
     {
-        return $user->can('delete-types');
+        return $user->can('delete-prizes');
     }
 }
