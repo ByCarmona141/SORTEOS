@@ -16,6 +16,7 @@ class RolesSeeder extends Seeder
         $roles = [
             'Admin',
             'User',
+            'Client',
         ];
 
         // Crear roles

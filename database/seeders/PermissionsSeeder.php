@@ -25,6 +25,22 @@ class PermissionsSeeder extends Seeder
             'view-users',
             'update-users',
             'delete-users',
+            'create-payments',
+            'view-payments',
+            'update-payments',
+            'delete-payments',
+            'create-prizes',
+            'view-prizes',
+            'update-prizes',
+            'delete-prizes',
+            'create-raffles',
+            'view-raffles',
+            'update-raffles',
+            'delete-raffles',
+            'create-tickets',
+            'view-tickets',
+            'update-tickets',
+            'delete-tickets',
         ];
 
         // Crear permisos
