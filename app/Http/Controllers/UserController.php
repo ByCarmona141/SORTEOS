@@ -8,7 +8,6 @@ use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
-use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 
 class UserController extends Controller
@@ -23,7 +22,7 @@ class UserController extends Controller
         return UserResource::collection($users)->response()->setStatusCode(200);
     }
 
-    public function store(UserRequest $request)
+    public function store(Request $request)
     {
         $this->authorize('create', User::class);
 

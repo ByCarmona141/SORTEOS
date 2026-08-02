@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Models\User;
 use App\Http\Traits\Sortable;
+use App\Http\Requests\UserRequest;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -18,6 +19,8 @@ class UserController extends Controller {
      * Lista de usuarios con búsqueda, filtro por rol/estado y orden.
      */
     public function index(Request $request) {
+        $this->authorize('viewAny', User::class);
+
         $query = User::with('roles')
             ->when($request->search, function ($q) use ($request) {
                 $q->where(function ($q2) use ($request) {
@@ -45,22 +48,20 @@ class UserController extends Controller {
      * Show the form for creating a new resource.
      */
     public function create() {
+        $this->authorize('create', User::class);
         $roles = Role::all();
+        $user = new User();
 
-        return view('user.create', compact('roles'));
+        return view('user.create', compact('roles', 'user'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'phone' => ['required', 'string', 'max:10', 'unique:users,phone'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'string', 'exists:roles,name'],
-        ]);
+    public function store(UserRequest $request) {
+        $this->authorize('create', User::class);
+
+        $validated = $request->validated();
 
         $user = User::create([
             'name' => $validated['name'],
@@ -86,6 +87,8 @@ class UserController extends Controller {
      * Show the form for editing the specified resource.
      */
     public function edit(User $user) {
+        $this->authorize('update', $user);
+
         $user->load('roles');
         $roles = Role::all();
 
@@ -95,14 +98,10 @@ class UserController extends Controller {
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user) {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
-            'phone' => ['required', 'string', 'max:10', Rule::unique('users', 'phone')->ignore($user->id)],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'string', 'exists:roles,name'],
-        ]);
+    public function update(UserRequest $request, User $user) {
+        $this->authorize('update', $user);
+
+        $validated = $request->validated();
 
         $user->name = $validated['name'];
         $user->email = $validated['email'];
@@ -125,6 +124,8 @@ class UserController extends Controller {
      * Remove the specified resource from storage.
      */
     public function destroy(User $user) {
+        $this->authorize('delete', $user);
+
         if ($user->id === auth()->id()) {
             return redirect()->route('user.index')->with('error', 'No puedes eliminar tu propio usuario.');
         }

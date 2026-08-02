@@ -26,6 +26,7 @@ class UserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->route('user'))],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'phone' => ['required', 'string', 'max:10', Rule::unique('users', 'phone')->ignore($this->route('user'))],
             'is_active' => ['sometimes', 'required', 'boolean'],
             'role' => ['sometimes', 'required', 'string', 'exists:roles,name'],
             'last_login_at' => ['nullable', 'date'],
