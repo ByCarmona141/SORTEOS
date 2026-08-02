@@ -21,11 +21,21 @@ class PaymentPolicy
     }
 
     /**
-     * Determine whether the user can view the model.
+     * Cualquier usuario logueado puede entrar a la lista de pagos.
+     * El controlador decide si ve TODOS los pagos o solo los suyos.
      */
-    public function view(User $user, Payment $model): bool
+    public function viewAny(User $user): bool
     {
-        return $user->can('view-payments');
+        return true;
+    }
+
+    /**
+     * Ver un pago específico: o tiene el permiso de revisor,
+     * o el pago es suyo.
+     */
+    public function view(User $user, Payment $payment): bool
+    {
+        return $user->can('view-payments') || $payment->user_id === $user->id;
     }
 
     /**
@@ -50,5 +60,13 @@ class PaymentPolicy
     public function delete(User $user, Payment $model): bool
     {
         return $user->can('delete-payments');
+    }
+
+    /**
+     * Aprobar/rechazar usa el mismo permiso que editar
+     */
+    public function review(User $user, Payment $payment): bool
+    {
+        return $user->can('update-payments');
     }
 }

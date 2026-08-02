@@ -9,6 +9,7 @@ use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\RoleController;
 use App\Http\Controllers\TestReportController;
 use App\Http\Controllers\Web\ProfileController;
+use App\Http\Controllers\Web\PaymentController;
 use App\Http\Controllers\Web\DashboardController;
 
 Route::get('/', function () {
@@ -45,5 +46,10 @@ Route::middleware('auth')->group(function () {
         'user' => UserController::class,
         'raffle' => RaffleController::class,
         'role' => RoleController::class,
+        'payment' => PaymentController::class, // 👈 nuevo
     ]);
+
+    Route::post('/payments/{payment}/approve', [PaymentController::class, 'approve'])->name('payment.approve');
+    Route::post('/payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payment.reject');
+    Route::post('/payments/{payment}/revert', [PaymentController::class, 'revertToPending'])->name('payment.revert');
 });

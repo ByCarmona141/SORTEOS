@@ -17,16 +17,25 @@ class RolesSeeder extends Seeder
             'Admin',
             'User',
             'Client',
+            'Manager'
         ];
 
-        // Crear roles
         foreach ($roles as $role) {
-            Role::create(['name' => $role]);
+            Role::firstOrCreate(['name' => $role]);
         }
 
-        // Asignar todos los permisos al rol Admin
-        $role = Role::find(1);
-        $permissions = Permission::all();
-        $role->givePermissionTo($permissions);
+        // Admin: todos los permisos
+        $adminRole = Role::where('name', 'Admin')->first();
+        $adminRole->givePermissionTo(Permission::all());
+
+        // Gerente: puede revisar pagos y sorteos, pero no eliminar ni administrar usuarios/roles
+        $managerRole = Role::where('name', 'Manager')->first();
+        $managerRole->givePermissionTo([
+            'view-payments',
+            'update-payments',
+            'view-raffles',
+            'view-tickets',
+            'update-tickets',
+        ]);
     }
 }

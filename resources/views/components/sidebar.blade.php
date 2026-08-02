@@ -49,13 +49,24 @@
             </a>
         </li>
 
-        @foreach ([['payments', 'Pagos'], ['help_center', 'Soporte']] as [$icon, $label])
+        <li>
+            <a href="{{ route('payment.index') }}"
+               class="flex items-center gap-md px-md py-sm rounded transition-all ml-[4px]
+              {{ request()->routeIs('payment.*')
+                 ? 'text-primary border-l-4 border-primary bg-surface-container-low font-bold -ml-[4px]'
+                 : 'text-on-surface-variant hover:text-on-surface hover:bg-primary-container/10' }}">
+                <span class="material-symbols-outlined">payments</span>
+                <span class="text-body-md">Pagos</span>
+            </a>
+        </li>
+
+        @foreach ([['help_center', 'Soporte']] as [$icon, $label])
             <li>
-                <span class="flex items-center gap-md px-md py-sm rounded ml-[4px] text-on-surface-variant/40 cursor-not-allowed">
-                    <span class="material-symbols-outlined">{{ $icon }}</span>
-                    <span class="text-body-md">{{ $label }}</span>
-                    <span class="ml-auto font-mono-label text-label-caps text-on-surface-variant/40">Pronto</span>
-                </span>
+        <span class="flex items-center gap-md px-md py-sm rounded ml-[4px] text-on-surface-variant/40 cursor-not-allowed">
+            <span class="material-symbols-outlined">{{ $icon }}</span>
+            <span class="text-body-md">{{ $label }}</span>
+            <span class="ml-auto font-mono-label text-label-caps text-on-surface-variant/40">Pronto</span>
+        </span>
             </li>
         @endforeach
     </ul>

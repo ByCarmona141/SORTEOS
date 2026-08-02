@@ -22,7 +22,10 @@ class UpdatePaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'total_amount' => ['required', 'numeric', 'min:0.01'],
+            'payment_method_id' => ['required', 'exists:payment_methods,id'],
+            'reference' => ['nullable', 'string', 'max:255'],
+            'proof_image' => ['nullable', 'image', 'max:4096'],
         ];
     }
 }
