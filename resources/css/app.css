@@ -195,3 +195,14 @@
         border-radius: 0.75rem;
     }
 }
+
+/* Estilos para los modales de comprobante (usan <dialog> nativo) */
+.receipt-dialog {
+    position: fixed;
+    inset: 0;
+    max-height: 100vh;
+}
+.receipt-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+}

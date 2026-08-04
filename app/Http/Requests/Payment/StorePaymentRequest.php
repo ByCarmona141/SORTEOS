@@ -27,7 +27,7 @@ class StorePaymentRequest extends FormRequest
             'total_amount' => ['required', 'numeric', 'min:0.01'],
             'payment_method_id' => ['required', 'exists:payment_methods,id'],
             'reference' => ['nullable', 'string', 'max:255'],
-            'proof_image' => ['required', 'image', 'max:4096'],
+            'proof_image' => ['required', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:4096'],
         ];
     }
 

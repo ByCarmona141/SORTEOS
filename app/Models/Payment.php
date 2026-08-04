@@ -75,4 +75,13 @@ class Payment extends Model
 
         return $map[$name] ?? ['icon' => 'help', 'classes' => 'bg-on-surface-variant/10 text-on-surface-variant border-outline-variant/40'];
     }
+
+    /**
+     * Nos dice si el comprobante guardado es un PDF,
+     * para saber si mostrarlo con <img> o con <iframe>.
+     */
+    public function proofIsPdf(): bool
+    {
+        return $this->proof_image && str_ends_with(strtolower($this->proof_image), '.pdf');
+    }
 }

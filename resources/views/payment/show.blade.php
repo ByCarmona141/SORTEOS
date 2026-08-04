@@ -87,11 +87,19 @@
         <div class="lg:col-span-2 space-y-lg">
             <h3 class="text-headline-md text-on-surface">Comprobante</h3>
             <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md">
-                @if ($payment->proof_image)
+                @if ($payment->proof_image && $payment->proofIsPdf())
+                    <iframe src="{{ \Illuminate\Support\Facades\Storage::url($payment->proof_image) }}"
+                            class="w-full rounded-lg border-0"
+                            style="height: 600px;">
+                    </iframe>
+                    <a href="{{ \Illuminate\Support\Facades\Storage::url($payment->proof_image) }}" target="_blank"
+                       class="mt-3 block text-center text-primary text-sm underline">
+                        Abrir PDF en otra pestaña
+                    </a>
+                @elseif ($payment->proof_image)
                     <img class="w-full max-w-lg mx-auto h-auto rounded-lg object-contain"
                          src="{{ \Illuminate\Support\Facades\Storage::url($payment->proof_image) }}"
-                         alt="Comprobante"
-                         onerror="this.replaceWith(Object.assign(document.createElement('p'), {className: 'text-error text-center py-12 text-sm', textContent: 'No se pudo cargar la imagen. ¿Corriste php artisan storage:link?'}))">
+                         alt="Comprobante">
                 @else
                     <p class="text-on-surface-variant text-center py-12">Sin comprobante adjunto.</p>
                 @endif

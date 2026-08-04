@@ -57,8 +57,8 @@
         <label class="block text-body-md text-on-surface-variant mb-xs" for="proof_image">
             Comprobante {{ isset($payment) ? '(deja vacío para conservar el actual)' : '*' }}
         </label>
-        <input type="file" id="proof_image" name="proof_image" accept="image/*"
-               class="w-full text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-primary-container file:text-on-primary-container file:font-bold">
+        <input type="file" id="proof_image" name="proof_image" accept="image/*,application/pdf"
+            class="w-full text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-primary-container file:text-on-primary-container file:font-bold">
         @if (isset($payment) && $payment->proof_image)
             <p class="mt-2 text-xs text-on-surface-variant">Comprobante actual: <a class="text-primary underline" href="{{ asset('storage/' . $payment->proof_image) }}" target="_blank">verlo</a></p>
         @endif
