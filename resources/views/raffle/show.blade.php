@@ -30,6 +30,11 @@
             <span class="material-symbols-outlined text-[20px]">edit</span>
             Editar
         </a>
+        <a href="{{ route('raffle.prize.index', $raffle) }}"
+        class="px-lg py-sm rounded-lg border border-outline text-on-surface hover:border-primary hover:text-primary transition-colors flex items-center gap-sm">
+            <span class="material-symbols-outlined text-[20px]">emoji_events</span>
+            Premios
+        </a>
         <form action="{{ route('raffle.destroy', $raffle) }}" method="POST" onsubmit="return confirm('¿Eliminar este sorteo? Esta acción no se puede deshacer.');">
             @csrf
             @method('DELETE')
