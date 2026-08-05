@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             StatusPaymentSeeder::class,
             PaymentMethodSeeder::class,
             StatusTicketSeeder::class,
+            TypeSeeder::class,
         ]);
     }
 }
