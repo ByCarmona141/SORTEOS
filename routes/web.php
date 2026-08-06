@@ -9,6 +9,7 @@ use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\RoleController;
 use App\Http\Controllers\Web\PrizeController;
 use App\Http\Controllers\TestReportController;
+use App\Http\Controllers\Web\TicketController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\PaymentController;
 use App\Http\Controllers\Web\DashboardController;
@@ -51,6 +52,8 @@ Route::middleware('auth')->group(function () {
     ]);
 
     Route::resource('raffle.prize', PrizeController::class)->except('show');
+    Route::get('/raffle/{raffle}/tickets', [TicketController::class, 'index'])->name('raffle.tickets.index');
+    Route::post('/raffle/{raffle}/tickets/generate', [TicketController::class, 'generate'])->name('raffle.tickets.generate');
 
     Route::post('/payments/{payment}/approve', [PaymentController::class, 'approve'])->name('payment.approve');
     Route::post('/payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payment.reject');
