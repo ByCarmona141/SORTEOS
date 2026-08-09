@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Web;
 use App\Models\Type;
 use App\Models\Prize;
 use App\Models\Raffle;
+use App\Models\Ticket;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Prize\StorePrizeRequest;
 use App\Http\Requests\Prize\UpdatePrizeRequest;
+use App\Http\Requests\Prize\AssignWinnerRequest;
 
 use App\Http\Controllers\Controller;
 
@@ -104,5 +106,37 @@ class PrizeController extends Controller
 
         return redirect()->route('raffle.prize.index', $raffle)
             ->with('success', 'Premio eliminado.');
+    }
+
+    /**
+     * Muestra el formulario para asignar el boleto ganador de un premio.
+     */
+    public function editWinner(Raffle $raffle, Prize $prize)
+    {
+        $this->authorize('update', $prize);
+
+        $prize->load('ticket', 'type');
+
+        return view('prize.assign-winner', compact('raffle', 'prize'));
+    }
+
+    /**
+     * Guarda el boleto ganador para ese premio.
+     */
+    public function updateWinner(AssignWinnerRequest $request, Raffle $raffle, Prize $prize)
+    {
+        $this->authorize('update', $prize);
+
+        $physicalNumber = $raffle->physicalTicketNumber((int) $request->drawn_number);
+
+        $ticket = Ticket::where('raffle_id', $raffle->id)
+            ->where('number', $physicalNumber)
+            ->firstOrFail();
+
+        $prize->update(['ticket_id' => $ticket->id]);
+
+        return redirect()
+            ->route('raffle.prize.index', $raffle)
+            ->with('success', "Boleto {$ticket->number} asignado como ganador de \"{$prize->title}\" (número sorteado: {$request->drawn_number}).");
     }
 }

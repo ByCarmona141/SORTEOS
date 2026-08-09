@@ -77,6 +77,12 @@
             </div>
 
             <div class="flex items-center justify-end gap-1">
+                @can('update', $prize)
+                    <a href="{{ route('raffle.prize.winner.edit', [$raffle, $prize]) }}"
+                    class="p-2 rounded text-on-surface-variant hover:text-primary hover:bg-surface-variant/30 transition-colors" title="Asignar ganador">
+                        <span class="material-symbols-outlined text-xl">emoji_events</span>
+                    </a>
+                @endcan
                 <a href="{{ route('raffle.prize.edit', [$raffle, $prize]) }}" class="p-2 rounded text-on-surface-variant hover:text-primary hover:bg-surface-variant/30 transition-colors" title="Editar">
                     <span class="material-symbols-outlined text-xl">edit</span>
                 </a>
