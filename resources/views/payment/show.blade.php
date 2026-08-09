@@ -97,9 +97,10 @@
                         Abrir PDF en otra pestaña
                     </a>
                 @elseif ($payment->proof_image)
-                    <img class="w-full max-w-lg mx-auto h-auto rounded-lg object-contain"
-                         src="{{ \Illuminate\Support\Facades\Storage::url($payment->proof_image) }}"
-                         alt="Comprobante">
+                    <img class="w-full mx-auto h-auto rounded-lg object-contain"
+                        src="{{ \Illuminate\Support\Facades\Storage::url($payment->proof_image) }}"
+                        alt="Comprobante"
+                        style="max-width: 32rem;">
                 @else
                     <p class="text-on-surface-variant text-center py-12">Sin comprobante adjunto.</p>
                 @endif
