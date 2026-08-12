@@ -13,6 +13,7 @@ use App\Http\Controllers\Web\TicketController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\PaymentController;
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\TicketSelectionController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -52,6 +53,7 @@ Route::middleware('auth')->group(function () {
     ]);
 
     Route::resource('raffle.prize', PrizeController::class)->except('show');
+    Route::patch('/raffle/{raffle}/status', [RaffleController::class, 'updateStatus'])->name('raffle.status');
     Route::get('raffle/{raffle}/prize/{prize}/winner', [PrizeController::class, 'editWinner'])->name('raffle.prize.winner.edit');
     Route::put('raffle/{raffle}/prize/{prize}/winner', [PrizeController::class, 'updateWinner'])->name('raffle.prize.winner.update');
     Route::get('/raffle/{raffle}/tickets', [TicketController::class, 'index'])->name('raffle.tickets.index');

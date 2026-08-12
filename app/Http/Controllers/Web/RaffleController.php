@@ -100,6 +100,21 @@ class RaffleController extends Controller
         }
     }
 
+    public function updateStatus(Request $request, Raffle $raffle)
+    {
+        $this->authorize('update', $raffle);
+
+        $validated = $request->validate([
+            'status' => ['required', 'string', 'exists:statuses,name'],
+        ]);
+
+        $status = Status::where('name', $validated['status'])->firstOrFail();
+
+        $raffle->update(['status_id' => $status->id]);
+
+        return back()->with('success', "El sorteo ahora está: {$status->name}.");
+    }
+
     /**
      * Remove the specified resource from storage.
      */

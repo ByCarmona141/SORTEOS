@@ -25,21 +25,37 @@
         </p>
     </div>
     <div class="flex gap-md">
+        @if (($raffle->status->name ?? null) !== 'Activo')
+            <form action="{{ route('raffle.status', $raffle) }}" method="POST"
+                onsubmit="return confirm('¿Activar este sorteo? Quedará visible para los clientes.');">
+                @csrf
+                @method('PATCH')
+                <input type="hidden" name="status" value="Activo">
+                <button type="submit" class="px-lg py-sm rounded-lg border border-primary/40 text-primary hover:bg-primary/10 transition-colors flex items-center gap-sm">
+                    <span class="material-symbols-outlined text-[20px]">play_circle</span>
+                    Activar
+                </button>
+            </form>
+        @endif
+
         <a href="{{ route('raffle.edit', $raffle) }}"
            class="px-lg py-sm rounded-lg bg-primary-container text-on-primary-container font-bold hover:shadow-[0_0_15px_rgba(245,158,11,0.4)] transition-shadow flex items-center gap-sm">
             <span class="material-symbols-outlined text-[20px]">edit</span>
             Editar
         </a>
+
         <a href="{{ route('raffle.prize.index', $raffle) }}"
         class="px-lg py-sm rounded-lg border border-outline text-on-surface hover:border-primary hover:text-primary transition-colors flex items-center gap-sm">
             <span class="material-symbols-outlined text-[20px]">emoji_events</span>
             Premios
         </a>
+
         <a href="{{ route('raffle.tickets.index', $raffle) }}"
         class="px-lg py-sm rounded-lg border border-outline text-on-surface hover:border-primary hover:text-primary transition-colors flex items-center gap-sm">
             <span class="material-symbols-outlined text-[20px]">confirmation_number</span>
             Boletos
         </a>
+
         <form action="{{ route('raffle.destroy', $raffle) }}" method="POST" onsubmit="return confirm('¿Eliminar este sorteo? Esta acción no se puede deshacer.');">
             @csrf
             @method('DELETE')

@@ -118,9 +118,23 @@
                                 <a href="{{ route('raffle.show', $raffle) }}" class="p-2 rounded text-on-surface-variant hover:text-primary hover:bg-surface-variant/30 transition-colors" title="Ver">
                                     <span class="material-symbols-outlined text-xl">visibility</span>
                                 </a>
+
+                                @if (($raffle->status->name ?? null) !== 'Activo')
+                                    <form action="{{ route('raffle.status', $raffle) }}" method="POST"
+                                        onsubmit="return confirm('¿Activar este sorteo? Quedará visible para los clientes.');">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input type="hidden" name="status" value="Activo">
+                                        <button type="submit" class="p-2 rounded text-on-surface-variant hover:text-primary hover:bg-surface-variant/30 transition-colors" title="Activar sorteo">
+                                            <span class="material-symbols-outlined text-xl">play_circle</span>
+                                        </button>
+                                    </form>
+                                @endif
+
                                 <a href="{{ route('raffle.edit', $raffle) }}" class="p-2 rounded text-on-surface-variant hover:text-primary hover:bg-surface-variant/30 transition-colors" title="Editar">
                                     <span class="material-symbols-outlined text-xl">edit</span>
                                 </a>
+
                                 <form action="{{ route('raffle.destroy', $raffle) }}" method="POST" onsubmit="return confirm('¿Eliminar este sorteo? Esta acción no se puede deshacer.');">
                                     @csrf
                                     @method('DELETE')
