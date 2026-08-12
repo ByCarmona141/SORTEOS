@@ -7,9 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
+use App\Models\Prize;
 use App\Models\Raffle;
 use App\Models\Status;
-use App\Models\Prize;
+use App\Models\Payment;
 use App\Http\Traits\Sortable;
 use App\Http\Requests\Raffle\StoreRaffleRequest;
 use App\Http\Requests\Raffle\UpdateRaffleRequest;
@@ -69,7 +70,13 @@ class RaffleController extends Controller
     {
         $raffle->load('prizes', 'status');
 
-        return view('raffle.show', compact('raffle'));
+        $recentPayments = Payment::with(['user', 'statusPayment'])
+        ->where('raffle_id', $raffle->id)
+        ->latest()
+        ->limit(8)
+        ->get();
+
+        return view('raffle.show', compact('raffle', 'recentPayments'));
     }
 
     /**

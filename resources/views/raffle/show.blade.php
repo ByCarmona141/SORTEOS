@@ -193,11 +193,54 @@
 {{-- Ventas recientes --}}
 <div>
     <h3 class="text-headline-md text-on-surface mb-md">Ventas recientes</h3>
+
     <div class="bg-surface-container border border-surface-variant rounded-xl overflow-hidden">
-        <div class="rounded-lg border border-dashed border-outline-variant/40 p-8 text-center">
-            <span class="material-symbols-outlined text-3xl text-on-surface-variant/50 block mb-2">receipt_long</span>
-            <p class="text-on-surface-variant text-sm">La lista de ventas y boletos estará disponible pronto.</p>
-        </div>
+        @if ($recentPayments->isEmpty())
+            <div class="p-8 text-center">
+                <span class="material-symbols-outlined text-3xl text-on-surface-variant/50 block mb-2">receipt_long</span>
+                <p class="text-on-surface-variant text-sm">Este sorteo aún no tiene pagos registrados.</p>
+            </div>
+        @else
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-surface-variant text-on-surface-variant font-mono-label text-label-caps uppercase">
+                        <th class="text-left px-lg py-md font-medium">Cliente</th>
+                        <th class="text-left px-lg py-md font-medium">Monto</th>
+                        <th class="text-left px-lg py-md font-medium">Estado</th>
+                        <th class="text-left px-lg py-md font-medium">Fecha</th>
+                        <th class="text-right px-lg py-md font-medium">Acción</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-variant">
+                    @foreach ($recentPayments as $payment)
+                        @php $paymentBadge = $payment->statusBadge(); @endphp
+                        <tr class="hover:bg-surface-variant/20 transition-colors">
+                            <td class="px-lg py-md text-on-surface">
+                                {{ $payment->user->name ?? 'Cliente eliminado' }}
+                            </td>
+                            <td class="px-lg py-md text-on-surface/80">
+                                ${{ number_format($payment->total_amount, 2) }}
+                            </td>
+                            <td class="px-lg py-md">
+                                <span class="inline-flex items-center gap-1.5 px-sm py-1 rounded-full text-xs font-medium border {{ $paymentBadge['classes'] }}">
+                                    <span class="material-symbols-outlined text-sm">{{ $paymentBadge['icon'] }}</span>
+                                    {{ $payment->statusPayment->name ?? 'Pendiente' }}
+                                </span>
+                            </td>
+                            <td class="px-lg py-md text-on-surface-variant">
+                                {{ $payment->created_at->diffForHumans() }}
+                            </td>
+                            <td class="px-lg py-md text-right">
+                                <a href="{{ route('payment.show', $payment) }}"
+                                   class="text-primary hover:underline underline-offset-4 text-sm">
+                                    Revisar →
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
     </div>
 </div>
 
