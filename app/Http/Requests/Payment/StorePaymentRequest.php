@@ -28,6 +28,8 @@ class StorePaymentRequest extends FormRequest
             'payment_method_id' => ['required', 'exists:payment_methods,id'],
             'reference' => ['nullable', 'string', 'max:255'],
             'proof_image' => ['required', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:4096'],
+            'ticket_ids' => ['required', 'array', 'min:1'],
+            'ticket_ids.*' => ['integer', 'exists:tickets,id'],
         ];
     }
 
@@ -40,6 +42,7 @@ class StorePaymentRequest extends FormRequest
             'payment_method_id.required' => 'Debes seleccionar el método de pago.',
             'proof_image.required' => 'Debes subir el comprobante de pago.',
             'proof_image.image' => 'El comprobante debe ser una imagen.',
+            'ticket_ids.required' => 'Debes seleccionar al menos un boleto para registrar el pago.',
         ];
     }
 }

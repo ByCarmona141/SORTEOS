@@ -13,15 +13,16 @@
                 </select>
                 @error('user_id') <p class="mt-1 text-xs text-error">{{ $message }}</p> @enderror
             </div>
+
             <div>
-                <label class="block text-body-md text-on-surface-variant mb-xs" for="raffle_id">Sorteo *</label>
-                <select id="raffle_id" name="raffle_id" class="w-full px-md py-sm bg-surface border border-outline-variant rounded text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
-                    <option value="">Selecciona un sorteo</option>
-                    @foreach ($raffles as $raffle)
-                        <option value="{{ $raffle->id }}" @selected(old('raffle_id') == $raffle->id)>{{ $raffle->name }}</option>
-                    @endforeach
-                </select>
-                @error('raffle_id') <p class="mt-1 text-xs text-error">{{ $message }}</p> @enderror
+                <label class="block text-body-md text-on-surface-variant mb-xs">Sorteo</label>
+                <div class="w-full px-md py-sm bg-surface-container-lowest border border-outline-variant rounded text-on-surface-variant">
+                    {{ $saleRaffle->name }}
+                </div>
+                <input type="hidden" name="raffle_id" value="{{ $saleRaffle->id }}">
+                @foreach ($saleTickets as $ticket)
+                    <input type="hidden" name="ticket_ids[]" value="{{ $ticket->id }}">
+                @endforeach
             </div>
         </div>
     @endif
@@ -30,9 +31,9 @@
         <div>
             <label class="block text-body-md text-on-surface-variant mb-xs" for="total_amount">Monto pagado *</label>
             <input type="number" step="0.01" min="0" id="total_amount" name="total_amount"
-                   class="w-full px-md py-sm bg-surface border border-outline-variant rounded text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-                   value="{{ old('total_amount', $payment->total_amount ?? '') }}" required>
-            @error('total_amount') <p class="mt-1 text-xs text-error">{{ $message }}</p> @enderror
+                class="w-full px-md py-sm bg-surface border border-outline-variant rounded text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                value="{{ old('total_amount', isset($saleRaffle) ? $saleTickets->count() * $saleRaffle->ticket_price : ($payment->total_amount ?? '')) }}"
+                @if(isset($saleRaffle)) readonly @endif required>
         </div>
         <div>
             <label class="block text-body-md text-on-surface-variant mb-xs" for="payment_method_id">Método de pago *</label>

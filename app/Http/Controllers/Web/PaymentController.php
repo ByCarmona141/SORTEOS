@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Models\Payment;
 use App\Models\Raffle;
+use App\Models\Ticket;
+use App\Models\Payment;
 use App\Models\StatusTicket;
 use App\Models\StatusPayment;
 use App\Models\PaymentMethod;
@@ -53,14 +54,93 @@ class PaymentController extends Controller
         return view('payment.index', compact('payments', 'statusPayments', 'canReview'));
     }
 
+    /**
+     * Lista los sorteos activos para elegir en cuál vender boletos.
+     */
+    public function saleIndex()
+    {
+        $this->authorize('create', Payment::class);
+
+        $raffles = Raffle::whereHas('status', fn ($q) => $q->where('name', 'Activo'))
+            ->orderBy('name')
+            ->get();
+
+        return view('payment.sale-index', compact('raffles'));
+    }
+
+    /**
+     * Cuadrícula de boletos de un sorteo para seleccionar cuáles vender.
+     */
+    public function selectTickets(Request $request, Raffle $raffle)
+    {
+        $this->authorize('create', Payment::class);
+
+        $query = $raffle->tickets()->with('statusTicket');
+
+        if ($request->filled('search')) {
+            $query->where('number', 'like', "%{$request->search}%");
+        }
+
+        $tickets = $query->orderBy('number')->paginate(500)->withQueryString();
+
+        return view('payment.sale-tickets', compact('raffle', 'tickets'));
+    }
+
+    /**
+     * Guarda la selección de boletos en sesión y manda al formulario de pago.
+     * No apartamos los boletos todavía; eso pasa hasta que se confirme el pago,
+     * para no bloquear boletos si al final no se completa la venta.
+     */
+    public function storeSelection(Request $request, Raffle $raffle)
+    {
+        $this->authorize('create', Payment::class);
+
+        $validated = $request->validate([
+            'ticket_ids' => ['required', 'array', 'min:1'],
+            'ticket_ids.*' => ['integer', 'exists:tickets,id'],
+        ], [
+            'ticket_ids.required' => 'Selecciona al menos un boleto.',
+        ]);
+
+        // Confirmamos que sigan disponibles justo antes de guardarlos en sesión
+        $available = $raffle->tickets()
+            ->whereIn('id', $validated['ticket_ids'])
+            ->whereHas('statusTicket', fn ($q) => $q->where('name', 'Disponible'))
+            ->pluck('id');
+
+        if ($available->count() !== count($validated['ticket_ids'])) {
+            return back()->with('error', 'Algunos boletos ya no están disponibles. Vuelve a seleccionar.');
+        }
+
+        session([
+            'sale_raffle_id' => $raffle->id,
+            'sale_ticket_ids' => $available->toArray(),
+        ]);
+
+        return redirect()->route('payment.create');
+    }
+
     public function create()
     {
         $this->authorize('create', Payment::class);
 
-        $raffles = Raffle::orderBy('name')->get();
+        if (!session()->has('sale_raffle_id')) {
+            return redirect()->route('payment.sale.index')
+                ->with('error', 'Primero selecciona los boletos que vas a vender.');
+        }
+
+        $saleRaffle = Raffle::find(session('sale_raffle_id'));
+        $saleTickets = Ticket::whereIn('id', session('sale_ticket_ids', []))->get();
+
+        if (!$saleRaffle || $saleTickets->isEmpty()) {
+            session()->forget(['sale_raffle_id', 'sale_ticket_ids']);
+            return redirect()->route('payment.sale.index')
+                ->with('error', 'La selección de boletos ya no es válida. Vuelve a intentarlo.');
+        }
+
         $paymentMethods = PaymentMethod::all();
 
-        return view('payment.create', compact('raffles', 'paymentMethods'));
+        return view('payment.create', compact('paymentMethods', 'saleRaffle', 'saleTickets'));
     }
 
     public function store(StorePaymentRequest $request)
@@ -68,16 +148,43 @@ class PaymentController extends Controller
         $validated = $request->validated();
 
         $pendiente = StatusPayment::where('name', 'Pendiente')->first();
-
+        $apartado = StatusTicket::where('name', 'Apartado')->first();
         $path = $request->file('proof_image')->store('comprobantes', 'public');
 
-        Payment::create([
-            ...$validated,
-            'proof_image' => $path,
-            'status_payment_id' => $pendiente?->id,
-        ]);
+        try {
+            DB::transaction(function () use ($validated, $pendiente, $apartado, $path) {
+                $payment = Payment::create([
+                    ...$validated,
+                    'proof_image' => $path,
+                    'status_payment_id' => $pendiente?->id,
+                ]);
 
-        return redirect()->route('payment.index')->with('success', 'Pago registrado. Queda pendiente de validación.');
+                // lockForUpdate evita que dos ventas tomen el mismo boleto a la vez
+                $tickets = Ticket::whereIn('id', $validated['ticket_ids'])
+                    ->lockForUpdate()
+                    ->get();
+
+                foreach ($tickets as $ticket) {
+                    if (($ticket->statusTicket->name ?? null) !== 'Disponible') {
+                        throw new \RuntimeException("El boleto {$ticket->number} ya no está disponible.");
+                    }
+                }
+
+                Ticket::whereIn('id', $tickets->pluck('id'))->update([
+                    'status_ticket_id' => $apartado?->id,
+                    'user_id' => $validated['user_id'],
+                    'payment_id' => $payment->id,
+                    'reserved_at' => now(),
+                ]);
+            });
+        } catch (\RuntimeException $e) {
+            Storage::disk('public')->delete($path);
+            return back()->withInput()->with('error', $e->getMessage() . ' Vuelve a seleccionar los boletos.');
+        }
+
+        session()->forget(['sale_raffle_id', 'sale_ticket_ids']);
+
+        return redirect()->route('payment.index')->with('success', 'Pago registrado. Boletos apartados, queda pendiente de validación.');
     }
 
     public function show(Payment $payment)

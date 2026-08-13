@@ -19,8 +19,9 @@
         </p>
     </div>
     @if ($canReview)
-        <a href="{{ route('payment.create') }}" class="px-lg py-sm bg-primary text-on-primary rounded font-bold hover:shadow-[0_0_15px_rgba(255,193,116,0.3)] transition-all text-body-md w-fit">
-            Registrar Pago
+        <a href="{{ route('payment.sale.index') }}" class="px-lg py-sm bg-primary text-on-primary rounded font-bold hover:shadow-[0_0_15px_rgba(255,193,116,0.3)] transition-all text-body-md w-fit flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px]">confirmation_number</span>
+            Vender Boletos
         </a>
     @endif
 </div>
