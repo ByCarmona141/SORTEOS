@@ -64,7 +64,13 @@
             @if ($payment->tickets->isNotEmpty())
                 <div class="bg-surface-container border border-surface-variant rounded-xl p-lg">
                     <p class="font-mono-label text-label-caps text-on-surface-variant mb-2">BOLETOS INCLUIDOS</p>
-                    <p class="text-on-surface">{{ $payment->tickets->pluck('number')->join(', ') }}</p>
+                    <p class="text-on-surface mb-md">{{ $payment->tickets->pluck('number')->join(', ') }}</p>
+
+                    <a href="{{ route('payment.tickets', $payment) }}"
+                    class="w-full text-center px-lg py-sm bg-primary-container text-on-primary-container rounded-lg font-bold hover:shadow-[0_0_15px_rgba(245,158,11,0.4)] transition-all flex items-center justify-center gap-sm">
+                        <span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+                        Ver boletos y PDF
+                    </a>
                 </div>
             @endif
 

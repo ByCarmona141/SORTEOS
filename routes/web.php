@@ -62,6 +62,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/payments/{payment}/approve', [PaymentController::class, 'approve'])->name('payment.approve');
     Route::post('/payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payment.reject');
     Route::post('/payments/{payment}/revert', [PaymentController::class, 'revertToPending'])->name('payment.revert');
+    Route::get('/payments/{payment}/tickets', [PaymentController::class, 'tickets'])->name('payment.tickets');
+
+    Route::get('/verify/{ticket}', [TicketVerificationController::class, 'show'])->name('ticket.verify')->middleware('signed');
 
     Route::get('/venta', [PaymentController::class, 'saleIndex'])->name('payment.sale.index');
     Route::get('/venta/{raffle}/boletos', [PaymentController::class, 'selectTickets'])->name('payment.sale.tickets');

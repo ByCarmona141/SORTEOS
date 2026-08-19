@@ -9,17 +9,28 @@ use App\Models\StatusTicket;
 use App\Models\StatusPayment;
 use App\Models\PaymentMethod;
 use App\Http\Traits\Sortable;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use App\Services\FileGenerators\PdfGenerator;
 use App\Http\Requests\Payment\StorePaymentRequest;
 use App\Http\Requests\Payment\UpdatePaymentRequest;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class PaymentController extends Controller
 {
     use Sortable;
+
+    protected PdfGenerator $pdfGenerator;
+
+    public function __construct(PdfGenerator $pdfGenerator)
+    {
+        $this->pdfGenerator = $pdfGenerator;
+    }
 
     public function index(Request $request)
     {
@@ -240,7 +251,7 @@ class PaymentController extends Controller
 
     /**
      * Aprobar un pago: lo marca como validado y pasa
-     * sus boletos a "Pagado".
+     * los boletos a "Pagado".
      */
     public function approve(Payment $payment)
     {
@@ -264,7 +275,54 @@ class PaymentController extends Controller
             }
         });
 
-        return back()->with('success', 'Pago aprobado. Los boletos quedaron marcados como pagados.');
+                // Generamos el PDF de cada boleto ya pagado.
+        // Está fuera de la transacción a propósito: si algo falla generando
+        // el PDF, no queremos que se revierta la aprobación del pago.
+        $payment->load('raffle', 'user', 'tickets');
+
+        foreach ($payment->tickets as $ticket) {
+            try {
+                $verifyUrl = URL::signedRoute('ticket.verify', ['ticket' => $ticket->id]);
+
+                $qrCodeSvg = QrCode::format('svg')->size(240)->margin(1)->generate($verifyUrl);
+                $qrCodeBase64 = base64_encode($qrCodeSvg);
+
+                $this->pdfGenerator->generate(
+                    [
+                        'title' => 'Boleto ' . $ticket->number,
+                        'raffle' => $payment->raffle,
+                        'ticket' => $ticket,
+                        'user' => $payment->user,
+                        'qrCode' => $qrCodeBase64,
+                    ],
+                    [
+                        'template' => 'pdf.ticket',
+                        'filename' => 'boleto-' . $ticket->number . '-id' . $ticket->id,
+                        'path' => storage_path('app/public/tickets/sorteo-' . $payment->raffle_id),
+                        'paper_size' => 'letter',
+                        'orientation' => 'portrait',
+                    ]
+                );
+
+                $ticket->update([
+                    'pdf_path' => 'tickets/sorteo-' . $payment->raffle_id . '/boleto-' . $ticket->number . '-id' . $ticket->id . '.pdf',
+                ]);
+            } catch (\Throwable $e) {
+                Log::error('Error generando PDF de boleto', [
+                    'ticket_id' => $ticket->id,
+                    'payment_id' => $payment->id,
+                    'exception_class' => get_class($e),
+                    'error' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+            }
+        }
+
+        return redirect()
+            ->route('payment.tickets', $payment)
+            ->with('success', 'Pago aprobado. Los boletos quedaron marcados como pagados.');
     }
 
     /**
@@ -327,5 +385,14 @@ class PaymentController extends Controller
         });
 
         return back()->with('success', 'El pago volvió a estado Pendiente.');
+    }
+
+    public function tickets(Payment $payment)
+    {
+        $this->authorize('view', $payment);
+
+        $payment->load('user', 'raffle', 'tickets');
+
+        return view('payment.tickets', compact('payment'));
     }
 }

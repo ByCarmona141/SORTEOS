@@ -122,6 +122,10 @@ return new class extends Migration
             // Cuándo se confirmó el pago (para historial)
             $table->timestamp('paid_at')->nullable();
 
+            // Guarda la ruta del PDF del boleto (ej. "tickets/ticket-123.pdf")
+            // null = el boleto todavía no tiene PDF generado (no está pagado, o falló la generación)
+            $table->string('pdf_path')->nullable();
+
             $table->timestamps();
 
             // === RESTRICCIÓN DE UNICIDAD ===

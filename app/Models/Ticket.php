@@ -14,6 +14,7 @@ class Ticket extends Model
         'status_ticket_id',
         'reserved_at',
         'paid_at',
+        'pdf_path',
     ];
 
     protected function casts(): array
