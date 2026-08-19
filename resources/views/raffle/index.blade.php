@@ -19,6 +19,12 @@
         </div>
     @endif
 
+    @if (session('error'))
+        <div class="rounded border border-error/30 bg-error/10 px-md py-sm text-error text-body-md">
+            {{ session('error') }}
+        </div>
+    @endif
+
     {{-- Tarjetas: una por cada estado real de la tabla statuses --}}
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-gutter">
         @foreach ($statuses as $status)
@@ -120,15 +126,25 @@
                                 </a>
 
                                 @if (($raffle->status->name ?? null) !== 'Activo')
-                                    <form action="{{ route('raffle.status', $raffle) }}" method="POST"
-                                        onsubmit="return confirm('¿Activar este sorteo? Quedará visible para los clientes.');">
-                                        @csrf
-                                        @method('PATCH')
-                                        <input type="hidden" name="status" value="Activo">
-                                        <button type="submit" class="p-2 rounded text-on-surface-variant hover:text-primary hover:bg-surface-variant/30 transition-colors" title="Activar sorteo">
+                                    @php
+                                        $canActivate = $raffle->prizes_count > 0 && $raffle->tickets_count > 0;
+                                    @endphp
+
+                                    @if ($canActivate)
+                                        <form action="{{ route('raffle.status', $raffle) }}" method="POST"
+                                            onsubmit="return confirm('¿Activar este sorteo? Quedará visible para los clientes.');">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="Activo">
+                                            <button type="submit" class="p-2 rounded text-on-surface-variant hover:text-primary hover:bg-surface-variant/30 transition-colors" title="Activar sorteo">
+                                                <span class="material-symbols-outlined text-xl">play_circle</span>
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="p-2 rounded text-on-surface-variant/30 cursor-not-allowed" title="Faltan premios y/o boletos generados para activar">
                                             <span class="material-symbols-outlined text-xl">play_circle</span>
-                                        </button>
-                                    </form>
+                                        </span>
+                                    @endif
                                 @endif
 
                                 <a href="{{ route('raffle.edit', $raffle) }}" class="p-2 rounded text-on-surface-variant hover:text-primary hover:bg-surface-variant/30 transition-colors" title="Editar">

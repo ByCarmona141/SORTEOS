@@ -25,6 +25,7 @@ class RaffleController extends Controller
     public function index(Request $request)
     {
         $query = Raffle::with('status')
+            ->withCount(['prizes', 'tickets'])
             ->when($request->search, fn ($q) => $q->where('name', 'like', "%{$request->search}%"))
             ->when($request->status, fn ($q) => $q->whereHas('status', fn ($s) => $s->where('name', $request->status)));
 
@@ -71,10 +72,10 @@ class RaffleController extends Controller
         $raffle->load('prizes', 'status');
 
         $recentPayments = Payment::with(['user', 'statusPayment'])
-        ->where('raffle_id', $raffle->id)
-        ->latest()
-        ->limit(8)
-        ->get();
+            ->where('raffle_id', $raffle->id)
+            ->latest()
+            ->limit(8)
+            ->get();
 
         return view('raffle.show', compact('raffle', 'recentPayments'));
     }
@@ -114,6 +115,24 @@ class RaffleController extends Controller
         $validated = $request->validate([
             'status' => ['required', 'string', 'exists:statuses,name'],
         ]);
+
+        // Solo validamos requisitos extra si están intentando ACTIVAR el sorteo.
+        // Los demás cambios de estado (Suspender, Cancelar, etc.) no necesitan esto.
+        if ($validated['status'] === 'Activo') {
+            $missing = [];
+
+            if ($raffle->prizes()->doesntExist()) {
+                $missing[] = 'no tiene premios registrados';
+            }
+
+            if ($raffle->tickets()->doesntExist()) {
+                $missing[] = 'no tiene boletos generados';
+            }
+
+            if (!empty($missing)) {
+                return back()->with('error', 'No se puede activar el sorteo: ' . implode(' y ', $missing) . '.');
+            }
+        }
 
         $status = Status::where('name', $validated['status'])->firstOrFail();
 

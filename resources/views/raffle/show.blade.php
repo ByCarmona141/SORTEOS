@@ -24,18 +24,55 @@
             ID: RFA-{{ str_pad($raffle->id, 4, '0', STR_PAD_LEFT) }} • Creado: {{ $raffle->created_at->format('d M Y') }}
         </p>
     </div>
+
+    @if (session('success'))
+        <div class="rounded border border-primary/30 bg-primary/10 px-md py-sm text-primary text-body-md">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="rounded border border-error/30 bg-error/10 px-md py-sm text-error text-body-md">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="flex gap-md">
+        @php
+            $canActivate = $raffle->prizes()->exists() && $raffle->tickets()->exists();
+        @endphp
+
         @if (($raffle->status->name ?? null) !== 'Activo')
-            <form action="{{ route('raffle.status', $raffle) }}" method="POST"
-                onsubmit="return confirm('¿Activar este sorteo? Quedará visible para los clientes.');">
-                @csrf
-                @method('PATCH')
-                <input type="hidden" name="status" value="Activo">
-                <button type="submit" class="px-lg py-sm rounded-lg border border-primary/40 text-primary hover:bg-primary/10 transition-colors flex items-center gap-sm">
-                    <span class="material-symbols-outlined text-[20px]">play_circle</span>
-                    Activar
-                </button>
-            </form>
+            @if ($canActivate)
+                <form action="{{ route('raffle.status', $raffle) }}" method="POST"
+                    onsubmit="return confirm('¿Activar este sorteo? Quedará visible para los clientes.');">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="status" value="Activo">
+                    <button type="submit" class="px-lg py-sm rounded-lg border border-primary/40 text-primary hover:bg-primary/10 transition-colors flex items-center gap-sm">
+                        <span class="material-symbols-outlined text-[20px]">play_circle</span>
+                        Activar
+                    </button>
+                </form>
+            @else
+                <div class="relative group">
+                    <span class="px-lg py-sm rounded-lg border border-outline-variant/30 text-on-surface-variant/40 flex items-center gap-sm cursor-not-allowed">
+                        <span class="material-symbols-outlined text-[20px]">play_circle</span>
+                        Activar
+                    </span>
+                    <div class="absolute hidden group-hover:block bottom-full mb-2 right-0 w-56 bg-surface-container-high border border-outline-variant rounded-lg p-3 text-xs text-on-surface-variant z-10">
+                        Faltan requisitos para activar:
+                        <ul class="list-disc list-inside mt-1">
+                            @if ($raffle->prizes()->doesntExist())
+                                <li>Agregar al menos un premio</li>
+                            @endif
+                            @if ($raffle->tickets()->doesntExist())
+                                <li>Generar los boletos del sorteo</li>
+                            @endif
+                        </ul>
+                    </div>
+                </div>
+            @endif
         @endif
 
         <a href="{{ route('raffle.edit', $raffle) }}"
